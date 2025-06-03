@@ -1,18 +1,11 @@
-# Use OpenJDK 21 base image
-FROM eclipse-temurin:21-jdk-alpine
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy your built JAR file into the container
-COPY target/netty-echo-backend.jar .
-
-# Set environment variables (can still be overridden at runtime)
-ENV SSL=true
-ENV HTTP2=true
-
-# Expose the Netty application's port
+FROM maven:3.6.3-jdk-8
+LABEL maintainer="ldclakmal@gmail.com"
+WORKDIR /
+COPY ./cert/keystore.p12 /etc/netty/cert/keystore.p12
+RUN git clone https://github.com/ldclakmal/netty-http-transport-sample.git
+WORKDIR /netty-http-transport-sample
+RUN mvn clean install
 EXPOSE 8688
-
-# Command to run the Netty backend
-CMD ["java", "-jar", "netty-echo-backend.jar"]
+ENV HTTP2=false
+ENV SSL=false
+CMD java -jar target/netty-http-echo-service.jar --ssl $SSL --http2 $HTTP2 --key-store-file /etc/netty/cert/keystore.p12 --key-store-password ballerina
