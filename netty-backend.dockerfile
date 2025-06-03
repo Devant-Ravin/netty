@@ -5,6 +5,8 @@ COPY ./cert/keystore.p12 /etc/netty/cert/keystore.p12
 RUN git clone https://github.com/ldclakmal/netty-http-transport-sample.git
 WORKDIR /netty-http-transport-sample
 RUN mvn clean install
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN chown -R appuser:appgroup /netty-http-transport-sample
 EXPOSE 8688
 ENV HTTP2=false
 ENV SSL=false
